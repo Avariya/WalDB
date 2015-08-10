@@ -9,7 +9,7 @@ namespace walDB;
 
 include 'wallDB.php';
 
-$conf = array('wal_path'=>'/tmp/wall','db_file'=>'/tmp/db');
+$conf = array('wal_path' => '/tmp/wall', 'db_file' => '/tmp/db');
 
 $db = new wallDB($conf);
 
@@ -17,7 +17,7 @@ $db->showAll();
 
 $index = $db->insert(10);
 
-$db->showAll($db);
+$db->showAll();
 
 $db->update($index,25);
 

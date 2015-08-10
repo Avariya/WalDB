@@ -9,7 +9,7 @@
 $host = '127.0.0.1';
 $port = 3443;
 
-$conf = array('wal_path'=>'/tmp/release_wall','db_file'=>'/tmp/release_db');
+$conf = array('wal_path' => '/tmp/release_wall', 'db_file' => '/tmp/release_db');
 
 $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 // connect to server
@@ -18,7 +18,7 @@ $result = socket_connect($socket, $host, $port) or die("Could not connect to ser
 $message = '3';
 socket_write($socket, $message, strlen($message)) or die("Could not send data to server\n");
 // get server response
-$result = socket_read ($socket, 1024) or die("Could not read server response\n");
+$result = socket_read($socket, 1024) or die("Could not read server response\n");
 
 socket_close($socket);
 

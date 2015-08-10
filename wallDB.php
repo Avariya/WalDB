@@ -18,7 +18,10 @@ class wallDB extends SimpleDB
     private $opNumber = 0;
     private $maxOps = 10;
 
-    public function __construct(array $conf, $autoSaveAfter = 10){
+    public function __construct(array $conf, $autoSaveAfter = 10)
+    {
+        parent::__construct();
+
         $this->walPath = $conf['wal_path'];
 
         $this->dbPath = $conf['db_file'];
@@ -27,15 +30,16 @@ class wallDB extends SimpleDB
         $this->loadDBFromFile();
 
 
-        if (file_exists($conf['wal_path'])){//if log file exist
+        if (file_exists($conf['wal_path'])) {//if log file exist
             $this->saveLoggedData($this->dbFileVer);
         } else {
             touch($conf['wal_path']);//else create it
         }
     }
 
-    private function loadDBFromFile(){
-        if ($file = file_get_contents($this->dbPath)){//file not found
+    private function loadDBFromFile()
+    {
+        if ($file = file_get_contents($this->dbPath)) {//file not found
             $data = json_decode($file, true);
 
             $this->dbFileVer = $data['ver'];
@@ -51,19 +55,20 @@ class wallDB extends SimpleDB
         }
     }
 
-    private function saveLoggedData($lastLine){
+    private function saveLoggedData($lastLine)
+    {
         $this->fileWrite = true;//not log this actions
         $this->opNumber = 0;
         $this->loadDBFromFile();//load old version of DB;
         $line = 0;
         $file = @fopen($this->walPath, "r");
         if ($file) {
-            while (($string = fgets($file)) !== false){//read log line by line
+            while (($string = fgets($file)) !== false) {//read log line by line
                 ++$line;
-                if ($line > $lastLine){
+                if ($line > $lastLine) {
                     $string = trim($string);
                     //parse line
-                    $toDo = explode(';',$string);
+                    $toDo = explode(';', $string);
                     switch ($toDo[0]) {
                         case 0://remove
                             $this->delete($toDo[1]);
@@ -83,17 +88,18 @@ class wallDB extends SimpleDB
         $this->db['ver'] = $line;
         $this->dbFileVer = $line;
         $this->fileWrite = false;
-        $success = file_put_contents($this->dbPath,json_encode($this->db));
+        $success = file_put_contents($this->dbPath, json_encode($this->db));
         unset($this->db['ver']);
         return $success;
     }
 
-    public function insert($val){
-        if ($this->fileWrite == false){//if not saving changes to file
-            if (file_put_contents($this->walPath, '2;'.$val.PHP_EOL, FILE_APPEND) === false){
+    public function insert($val)
+    {
+        if ($this->fileWrite == false) {//if not saving changes to file
+            if (file_put_contents($this->walPath, '2;' . $val . PHP_EOL, FILE_APPEND) === false) {
                 return false;
             } else {
-                if (++$this->opNumber > $this->maxOps){
+                if (++$this->opNumber > $this->maxOps) {
                     return $this->saveLoggedData($this->dbFileVer);
                 }
             }
@@ -101,12 +107,13 @@ class wallDB extends SimpleDB
         return parent::insert($val);
     }
 
-    public function update($pos, $val){
-        if ($this->fileWrite == false){//if not saving changes to file
-            if (file_put_contents($this->walPath, '1;'.$pos.';'.$val.PHP_EOL, FILE_APPEND) === false){
+    public function update($pos, $val)
+    {
+        if ($this->fileWrite == false) {//if not saving changes to file
+            if (file_put_contents($this->walPath, '1;' . $pos . ';' . $val . PHP_EOL, FILE_APPEND) === false) {
                 return false;
             } else {
-                if (++$this->opNumber > $this->maxOps){
+                if (++$this->opNumber > $this->maxOps) {
                     return $this->saveLoggedData($this->dbFileVer);
                 }
             }
@@ -114,12 +121,13 @@ class wallDB extends SimpleDB
         return parent::update($pos, $val);
     }
 
-    public function delete($pos){
-        if ($this->fileWrite == false){//if not saving changes to file
-            if (file_put_contents($this->walPath, '0;'.$pos.PHP_EOL, FILE_APPEND) === false){
+    public function delete($pos)
+    {
+        if ($this->fileWrite == false) {//if not saving changes to file
+            if (file_put_contents($this->walPath, '0;' . $pos . PHP_EOL, FILE_APPEND) === false) {
                 return false;
             } else {
-                if (++$this->opNumber > $this->maxOps){
+                if (++$this->opNumber > $this->maxOps) {
                     return $this->saveLoggedData($this->dbFileVer);
                 }
             }

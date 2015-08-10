@@ -8,17 +8,18 @@
 
 include 'wallDB.php';
 
-$conf = array('wal_path'=>'/tmp/release_wall','db_file'=>'/tmp/release_db');
+$conf = array('wal_path' => '/tmp/release_wall', 'db_file' => '/tmp/release_db');
 $db = new \WalDB\wallDB($conf);
 
 set_time_limit(0);
 ob_implicit_flush();
 
-function proceedInput($buf, \WalDB\wallDB $db){
-    $toDo = explode(';',trim($buf));
+function proceedInput($buf, \WalDB\wallDB $db)
+{
+    $toDo = explode(';', trim($buf));
     switch ($toDo[0]) {
         case 0://remove
-            if (strlen($toDo[1])){
+            if (strlen($toDo[1])) {
                 $answer = $db->delete($toDo[1]);
             } else {
                 $answer = false;
@@ -65,18 +66,17 @@ do {
     $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
     do {
         $buf = @socket_read($spawn, 1024);
-        if (false !== $buf){
+        if (false !== $buf) {
             $buf = trim($buf);
 
-            $output = proceedInput($buf,$db);
-            socket_write($spawn, $output, strlen ($output)) or socket_close($spawn);
+            $output = proceedInput($buf, $db);
+            socket_write($spawn, $output, strlen($output)) or socket_close($spawn);
         } else {
             break;
         }
 
     } while (true);
 } while (true);
-
 
 
 socket_close($socket);

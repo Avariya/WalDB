@@ -18,7 +18,8 @@ class SimpleDB
         $this->db = array();
     }
 
-    public function insert($val){
+    public function insert($val)
+    {
         $this->db[] = $val;
         end($this->db);
         $key = key($this->db);
@@ -35,21 +36,24 @@ class SimpleDB
     {
         $cou = count($this->db);
         unset($this->db[$pos]);
-        if (count($this->db) < $cou){
+        if (count($this->db) < $cou) {
             return true;
         }
         return false;
     }
 
-    public function showAll(){
+    public function showAll()
+    {
         print_r($this->db);
     }
 
-    public function showPos($pos){
-        echo $this->db[$pos],PHP_EOL;
+    public function showPos($pos)
+    {
+        echo $this->db[$pos], PHP_EOL;
     }
 
-    public function find($val){
+    public function find($val)
+    {
         return array_search($val, $this->db);
     }
 
