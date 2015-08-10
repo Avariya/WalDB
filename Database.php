@@ -11,7 +11,7 @@ namespace WalDB;
 
 class SimpleDB
 {
-    private $db;
+    protected $db;
 
     public function __construct()
     {
@@ -50,7 +50,9 @@ class SimpleDB
         echo $this->db[$pos],PHP_EOL;
     }
 
-    p
+    public function find($val){
+        return array_search($val, $this->db);
+    }
 
 
 }

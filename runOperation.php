@@ -5,11 +5,13 @@
  * Date: 8/10/15
  * Time: 11:36 AM
  */
-include 'Database.php';
+namespace walDB;
 
-use WalDB\SimpleDB;
+include 'wallDB.php';
 
-$db = new SimpleDB();
+$conf = array('wal_path'=>'/tmp/wall','db_file'=>'/tmp/db');
+
+$db = new wallDB($conf);
 
 $db->showAll();
 
