@@ -15,11 +15,14 @@ class wallDB extends SimpleDB
     private $fileWrite = false;
     private $dbPath;
     private $dbFileVer;
+    private $opNumber = 0;
+    private $maxOps = 10;
 
-    public function __construct(array $conf){
+    public function __construct(array $conf, $autoSaveAfter = 10){
         $this->walPath = $conf['wal_path'];
 
         $this->dbPath = $conf['db_file'];
+        $this->maxOps = $autoSaveAfter;
 
         $this->loadDBFromFile();
 
@@ -50,6 +53,7 @@ class wallDB extends SimpleDB
 
     private function saveLoggedData($lastLine){
         $this->fileWrite = true;//not log this actions
+        $this->opNumber = 0;
         $this->loadDBFromFile();//load old version of DB;
         $line = 0;
         $file = @fopen($this->walPath, "r");
@@ -88,6 +92,10 @@ class wallDB extends SimpleDB
         if ($this->fileWrite == false){//if not saving changes to file
             if (file_put_contents($this->walPath, '2;'.$val.PHP_EOL, FILE_APPEND) === false){
                 return false;
+            } else {
+                if (++$this->opNumber > $this->maxOps){
+                    return $this->saveLoggedData($this->dbFileVer);
+                }
             }
         }
         return parent::insert($val);
@@ -97,6 +105,10 @@ class wallDB extends SimpleDB
         if ($this->fileWrite == false){//if not saving changes to file
             if (file_put_contents($this->walPath, '1;'.$pos.';'.$val.PHP_EOL, FILE_APPEND) === false){
                 return false;
+            } else {
+                if (++$this->opNumber > $this->maxOps){
+                    return $this->saveLoggedData($this->dbFileVer);
+                }
             }
         }
         return parent::update($pos, $val);
@@ -106,6 +118,10 @@ class wallDB extends SimpleDB
         if ($this->fileWrite == false){//if not saving changes to file
             if (file_put_contents($this->walPath, '0;'.$pos.PHP_EOL, FILE_APPEND) === false){
                 return false;
+            } else {
+                if (++$this->opNumber > $this->maxOps){
+                    return $this->saveLoggedData($this->dbFileVer);
+                }
             }
         }
         return parent::delete($pos);
