@@ -20,16 +20,22 @@ function proceedInput($buf, \WalDB\wallDB $db){
         case 0://remove
             if (strlen($toDo[1])){
                 $answer = $db->delete($toDo[1]);
+            } else {
+                $answer = false;
             }
             break;
         case 1://update
             if (strlen($toDo[1]) && strlen($toDo[2])) {
                 $answer = $db->update($toDo[1], $toDo[2]);
+            } else {
+                $answer = false;
             }
             break;
         case 2://insert
             if (strlen($toDo[1])) {
                 $answer = $db->insert($toDo[1]);
+            } else {
+                $answer = false;
             }
             break;
         case 3://show all
