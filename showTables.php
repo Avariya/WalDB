@@ -24,8 +24,8 @@ socket_close($socket);
 
 echo "Current DB state: ".PHP_EOL.$result.PHP_EOL;
 
-echo "Physical DB file: ".PHP_EOL.file_get_contents($conf['db_file']).PHP_EOL;
+echo "Physical DB file: ".PHP_EOL.file_get_contents($conf['db_file']).PHP_EOL.PHP_EOL;
 
-echo "Physical log file: ".PHP_EOL.file_get_contents($conf['wal_path']).PHP_EOL;
+echo "Physical log file: ".PHP_EOL.file_get_contents($conf['wal_path']);
 
 // close socket

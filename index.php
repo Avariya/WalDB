@@ -55,6 +55,13 @@ if (count($_POST) > 0) {
     <input type="submit" value="Action!"/>
 </form>
 
+<hr />
+
+<pre>
+<?php
+include 'showTables.php';
+?>
+</pre>
 
 </body>
 </html>
