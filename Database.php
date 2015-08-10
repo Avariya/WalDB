@@ -16,7 +16,6 @@ class SimpleDB
     public function __construct()
     {
         $this->db = array();
-        echo 'test';
     }
 
     public function insert($val){

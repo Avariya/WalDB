@@ -13,71 +13,65 @@ $db = new \WalDB\wallDB($conf);
 
 set_time_limit(0);
 ob_implicit_flush();
-$address = '127.0.0.1';
+
+function proceedInput($buf, \WalDB\wallDB $db){
+    $toDo = explode(';',trim($buf));
+    switch ($toDo[0]) {
+        case 0://remove
+            if (strlen($toDo[1])){
+                $answer = $db->delete($toDo[1]);
+            }
+            break;
+        case 1://update
+            if (strlen($toDo[1]) && strlen($toDo[2])) {
+                $answer = $db->update($toDo[1], $toDo[2]);
+            }
+            break;
+        case 2://insert
+            if (strlen($toDo[1])) {
+                $answer = $db->insert($toDo[1]);
+            }
+            break;
+        case 3://show all
+            ob_start();
+            $db->showAll();
+            return ob_get_flush();
+        default:
+            $answer = false;
+    }
+
+    if ($answer) {
+        $talkback = 'success';
+    } else {
+        $talkback = 'error';
+    }
+    return $talkback;
+}
+
+$host = '127.0.0.1';
 $port = 3443;
 
-if (($sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP)) === false) {
-    echo "Не удалось выполнить socket_create(): причина: " . socket_strerror(socket_last_error()) . "\n";
-}
-
-if (socket_bind($sock, $address, $port) === false) {
-    echo "Не удалось выполнить socket_bind(): причина: " . socket_strerror(socket_last_error($sock)) . "\n";
-}
-
-if (socket_listen($sock, 5) === false) {
-    echo "Не удалось выполнить socket_listen(): причина: " . socket_strerror(socket_last_error($sock)) . "\n";
-}
+$socket = socket_create(AF_INET, SOCK_STREAM, 0);
+$result = socket_bind($socket, $host, $port);
+$result = socket_listen($socket, 3);
 
 do {
-    if (($msgsock = socket_accept($sock)) === false) {
-        echo "Не удалось выполнить socket_accept(): причина: " . socket_strerror(socket_last_error($sock)) . "\n";
-        break;
-    }
-    /* Отправляем инструкции. */
-    $msg = "\nДобро пожаловать на тестовый сервер PHP. \n" .
-        "Чтобы отключиться, наберите 'выход'. Чтобы выключить сервер, наберите 'выключение'.\n";
-    socket_write($msgsock, $msg, strlen($msg));
-
+    $spawn = socket_accept($socket) or die("Could not accept incoming connection\n");
     do {
-        if (false === ($buf = socket_read($msgsock, 2048, PHP_NORMAL_READ))) {
-            echo "Не удалось выполнить socket_read(): причина: " . socket_strerror(socket_last_error($msgsock)) . "\n";
-            break 2;
-        }
-        if (!$buf = trim($buf)) {
-            continue;
-        }
+        $buf = @socket_read($spawn, 1024);
+        if (false !== $buf){
+            $buf = trim($buf);
 
-
-        //Socket realization to listen my DB
-
-        //parse line
-        $toDo = explode(';',trim($buf));
-        switch ($toDo[0]) {
-            case 0://remove
-                $answer = $db->delete($toDo[1]);
-                break;
-            case 1://update
-                $answer = $db->update($toDo[1], $toDo[2]);
-                break;
-            case 2://insert
-                $answer = $db->insert($toDo[1]);
-                break;
-            default:
-                $answer = false;
-        }
-
-        //End socket realization
-        if ($answer) {
-            $talkback = 'success';
+            $output = proceedInput($buf,$db);
+            socket_write($spawn, $output, strlen ($output)) or socket_close($spawn);
         } else {
-            $talkback = 'error';
+            break;
         }
 
-        socket_write($msgsock, $talkback, strlen($talkback));
-
-        echo "$buf\n";
     } while (true);
-    socket_close($msgsock);
 } while (true);
 
-socket_close($sock);
+
+
+socket_close($socket);
+
