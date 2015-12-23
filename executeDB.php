@@ -8,7 +8,8 @@
 
 include 'wallDB.php';
 
-$conf = array('wal_path' => '/tmp/release_wall', 'db_file' => '/tmp/release_db');
+$tmpDir = sys_get_temp_dir();
+$conf = array('wal_path' => $tmpDir.'/release_wall', 'db_file' => $tmpDir.'/release_db');
 $db = new \WalDB\wallDB($conf);
 
 set_time_limit(0);

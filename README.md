@@ -3,7 +3,7 @@ for .io
 
 Run
 
-php -f getElementsByName
+php -f executeDB.php
 
 You can manage db from telnet with 127.0.0.1:3443
 

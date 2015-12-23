@@ -9,7 +9,8 @@
 $host = '127.0.0.1';
 $port = 3443;
 
-$conf = array('wal_path' => '/tmp/release_wall', 'db_file' => '/tmp/release_db');
+$tmpDir = sys_get_temp_dir();
+$conf = array('wal_path' => $tmpDir.'/release_wall', 'db_file' => $tmpDir.'/release_db');
 
 $socket = socket_create(AF_INET, SOCK_STREAM, 0) or die("Could not create socket\n");
 // connect to server

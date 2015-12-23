@@ -25,6 +25,9 @@ class wallDB extends SimpleDB
         $this->walPath = $conf['wal_path'];
 
         $this->dbPath = $conf['db_file'];
+        if (!file_exists($this->dbPath)){
+            touch($this->dbPath);
+        }
         $this->maxOps = $autoSaveAfter;
 
         $this->loadDBFromFile();
