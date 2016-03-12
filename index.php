@@ -1,7 +1,7 @@
 <html>
 <head>
     <title>
-        DB Manager
+        DB Manager changed
     </title>
     <script type="text/javascript">
         function changeInputs(sel) {
